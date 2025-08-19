@@ -8,6 +8,12 @@
     "start": "next start",
     "lint": "next lint"
   },
+  "overrides": {
+    "react-d3-cloud": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
+  },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.1",
