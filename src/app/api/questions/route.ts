@@ -7,17 +7,6 @@ import { getAuthSession } from "@/lib/nextauth";
 // POST /api/questions
 export const POST = async (req: Request, res: Response) => {
     try {
-        // const session = await getAuthSession();
-        // if(!session?.user) {
-        //     return NextResponse.json(
-        //         {
-        //             error: "Unauthorized! You must be logged in to create a quiz."
-        //         },
-        //         {
-        //             status: 401
-        //         }
-        //     );
-        // }
         const body = await req.json();
         const {amount, topic, type} = quizCreationSchema.parse(body);
 
@@ -26,7 +15,7 @@ export const POST = async (req: Request, res: Response) => {
             questions = await strict_output(
               "You are a helpful AI that is able to generate a pair of question and answers, the length of each answer should not be more than 15 words, store all the pairs of answers and questions in a JSON array",
               new Array(amount).fill(
-                `You are to generate one random medium to hard open-ended question (must be relevant and useful) about the topic: ${topic}`
+                `You are to generate one random medium to hard open-ended question (must be relevant and useful) about the topic: ${topic}. I am going to use this question as a fill in the blanks question for the user to answer. The question should be in the form of a question, and the answer should be distinct and relevant to the question.`
               ),
               {
                 question: "question",
@@ -37,7 +26,8 @@ export const POST = async (req: Request, res: Response) => {
             questions = await strict_output(
               "You are a helpful AI that is able to generate mcq questions and answers, the length of each answer should not be more than 15 words, store all answers and questions and options in a JSON array",
               new Array(amount).fill(
-                `You are to generate one random medium to hard multiple choice question (must be relevant and useful) about the topic: ${topic}. The question should have one correct answer and three distinct incorrect options. It should be in the form of a question, and the options should be distinct and relevant to the question.`
+                `You are to generate one random medium to hard multiple choice question (must be relevant and useful) about the topic: ${topic}. The question should have one correct answer and three distinct incorrect options. It should be in the form of a question, and the options should be distinct and relevant to the question. 
+                The answer should be the correct answer make the options similar to the correct answer so that it is not obvious which one is correct.`
               ),
               {
                 question: "question",
