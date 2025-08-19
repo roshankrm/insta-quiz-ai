@@ -21,20 +21,9 @@ type Props = {
 }
 
 const OpenEnded = ({ game }: Props) => {
-
     const [questionIndex, setQuestionIndex] = useState(0);
     const [hasEnded, setHasEnded] = useState(false);
-    // const [now, setNow] = useState(new Date());
     const [blankAnswer, setBlankAnswer] = useState('');
-
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         if(!hasEnded) {
-    //             setNow(new Date());
-    //         }
-    //     }, 1000);
-    //     return () => clearInterval(interval);
-    // }, [hasEnded]);
 
     const curQuestion = useMemo(() => {
         return game.questions[questionIndex];

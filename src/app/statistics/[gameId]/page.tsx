@@ -16,12 +16,12 @@ type Props = {
     }
 }
 
-const StatisticsPage = async ({params: { gameId }}: Props) => {
+const StatisticsPage = async (props: Props) => {
     const session = await getAuthSession();
     if(!session?.user) {
         return redirect('/');
     }
-
+    const { gameId } = props.params;
     const game = await prisma.game.findUnique({
         where: {id: gameId},
         include: { questions: true }

@@ -21,22 +21,11 @@ type Props = {
 }
 
 const MCQ = ({ game }: Props) => {
-
     const [questionIndex, setQuestionIndex] = useState(0);
     const [selectedOption, setSelectedOption] = useState(0);
     const [correctAnswers, setCorrectAnswers] = useState(0);
     const [wrongAnswers, setWrongAnswers] = useState(0);
     const [hasEnded, setHasEnded] = useState(false);
-    // const [now, setNow] = useState(new Date());
-
-    // useEffect(() => {
-    //     const interval = setInterval(() => {
-    //         if(!hasEnded) {
-    //             setNow(new Date());
-    //         }
-    //     }, 1000);
-    //     return () => clearInterval(interval);
-    // }, [hasEnded]);
 
     const curQuestion = useMemo(() => {
         return game.questions[questionIndex];
@@ -128,7 +117,7 @@ const MCQ = ({ game }: Props) => {
     if(hasEnded) {
         return (
             <div className="absolute flex flex-col justify-center -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-                <div className="px-4 mt-2 font-semibold text-white bg-green-500 rounded-md whitespace-nowrap">
+                <div className="px-4 py-1 min-h-6 flex items-center justify-center font-semibold text-white bg-green-600 rounded-md whitespace-nowrap">
                     You have fininshed the quiz in {formatTimeDelta(differenceInSeconds((game.timeEnded || new Date()), game.timeStarted))}!
                 </div>
                 <Link href={`/statistics/${game.id}`} className={`${buttonVariants()} mt-2`}>

@@ -39,7 +39,7 @@ const ResultsCard = ({ accuracy }: Props) => {
             {accuracy <= 50 && (
                 <>
                     <Trophy className='mr-4' stroke='brown' size={50} />
-                    <div className="flex flex-col text-2xl font-semibold text-amber-400">
+                    <div className="flex flex-col text-2xl font-semibold text-red-800">
                         <span>Nice Try!</span>
                         <span className='text-sm text-center text-black-opacity-50'>
                             {"< 50% accuracy"}

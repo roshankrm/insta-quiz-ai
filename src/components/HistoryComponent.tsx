@@ -8,7 +8,8 @@ type Props = {
   userId: string
 }
 
-const HistoryComponent = async ({limit, userId}: Props) => {
+const HistoryComponent = async (props: Props) => {
+  const { limit, userId } = props;
   const games = await prisma.game.findMany({
     where: {
       userId

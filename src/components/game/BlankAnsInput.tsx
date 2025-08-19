@@ -9,7 +9,7 @@ type Props = {
 const BLANKS = '_____';
 
 const BlankAnsInput = ({ answer, setBlankAnswer }: Props) => {
-  const keywords = useMemo(() => {
+    const keywords = useMemo(() => {
     const words = keyword_extractor.extract(answer, {
       language: "english",
       remove_digits: true,
@@ -18,7 +18,7 @@ const BlankAnsInput = ({ answer, setBlankAnswer }: Props) => {
     });
 
     const shuffled = words.sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, Math.min(3, shuffled.length));
+    return shuffled.slice(0, Math.min(2, shuffled.length));
   }, [answer]);
 
   const answerWithBlanks = useMemo(() => {

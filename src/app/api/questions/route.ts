@@ -26,7 +26,7 @@ export const POST = async (req: Request, res: Response) => {
             questions = await strict_output(
               "You are a helpful AI that is able to generate a pair of question and answers, the length of each answer should not be more than 15 words, store all the pairs of answers and questions in a JSON array",
               new Array(amount).fill(
-                `You are to generate a random hard open-ended questions about the topic: ${topic}`
+                `You are to generate one random medium to hard open-ended question (must be relevant and useful) about the topic: ${topic}`
               ),
               {
                 question: "question",
@@ -37,14 +37,14 @@ export const POST = async (req: Request, res: Response) => {
             questions = await strict_output(
               "You are a helpful AI that is able to generate mcq questions and answers, the length of each answer should not be more than 15 words, store all answers and questions and options in a JSON array",
               new Array(amount).fill(
-                `You are to generate a random hard mcq question about the topic: ${topic}`
+                `You are to generate one random medium to hard multiple choice question (must be relevant and useful) about the topic: ${topic}. The question should have one correct answer and three distinct incorrect options. It should be in the form of a question, and the options should be distinct and relevant to the question.`
               ),
               {
                 question: "question",
                 answer: "answer with max length of 15 words",
-                option1: "option1 with max length of 15 words",
-                option2: "option2 with max length of 15 words",
-                option3: "option3 with max length of 15 words"
+                option1: "distinct incorrect option1 with max length of 15 words",
+                option2: "distinct incorrect option2 with max length of 15 words",
+                option3: "distinct incorrect option3 with max length of 15 words"
               }
             );
         }

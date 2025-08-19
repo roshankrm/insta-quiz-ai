@@ -1,7 +1,7 @@
 "use client";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import D3WordCloud from "react-d3-cloud";
 
 type Props = {
@@ -14,9 +14,20 @@ const fontSizeMapper = (word: { value: number }) =>
 const WordCloud = ({ formattedTopics }: Props) => {
   const theme = useTheme();
   const router = useRouter();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) {
+    return null;
+  }
+
   return (
     <>
       <D3WordCloud
+        key={theme.theme}
         data={formattedTopics}
         height={550}
         font="Times"

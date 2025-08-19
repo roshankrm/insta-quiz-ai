@@ -14,13 +14,13 @@ export const meatadat = {
     description: "Quiz yourself on anything!",
 };
 
-const QuizPage = async ({searchParams}: Props) => {
+const QuizPage = async (props: Props) => {
     const session = await getAuthSession();
     if (!session?.user) {
         return redirect('/');
     }
     return (
-        <QuizCreation topic={searchParams.topic ?? ""} />
+        <QuizCreation topic={props.searchParams.topic ?? ""} />
     )
 }
 

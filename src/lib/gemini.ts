@@ -1,6 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize the Google Generative AI client with your API key
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
 interface OutputFormat {
@@ -13,7 +12,7 @@ export async function strict_output(
   output_format: OutputFormat,
   default_category: string = "",
   output_value_only: boolean = false,
-  model: string = "gemini-2.5-flash", // Use a valid Gemini model
+  model: string = "gemini-2.5-flash",
   temperature: number = 1,
   num_tries: number = 3,
   verbose: boolean = false
@@ -25,7 +24,6 @@ export async function strict_output(
   let error_msg: string = "";
 
   for (let i = 0; i < num_tries; i++) {
-    // The prompt construction logic remains identical
     let output_format_prompt: string = `\nYou are to output ${
       list_output ? "an array of objects in" : ""
     } the following in json format: ${JSON.stringify(
@@ -42,18 +40,15 @@ export async function strict_output(
       output_format_prompt += `\nGenerate an array of json, one json for each input element.`;
     }
 
-    // Gemini works best with a combined prompt
     const full_prompt = `${system_prompt}\n${output_format_prompt}${error_msg}\n\n${user_prompt.toString()}`;
 
-    // Get the generative model
     const gemini_model = genAI.getGenerativeModel({ 
       model: model,
       generationConfig: { temperature } 
     });
     
-    // Updated API call to Gemini
     const result = await gemini_model.generateContent(full_prompt);
-    const response = await result.response;
+    const response = result.response;
     let res: string = response.text().replace(/'/g, '"') ?? "";
     
     res = res.replace(/```json\n|```/g, "").trim(); // removes code block markers
@@ -67,7 +62,6 @@ export async function strict_output(
     }
 
     try {
-      // Your custom validation and parsing logic remains the same
       let output: any = JSON.parse(res);
 
       if (list_input) {

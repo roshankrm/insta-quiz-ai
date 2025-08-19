@@ -10,13 +10,12 @@ type Props = {
     }
 }
 
-const MCQPage = async ({params}: Props) => {
-    const gameId = params.gameId;
+const MCQPage = async (props: Props) => {
     const session = await getAuthSession();
     if(!session?.user) {
         return redirect('/');
     }
-
+    const {gameId} = props.params;
     const game = await prisma.game.findUnique({
         where: {
             id: gameId,
