@@ -1,20 +1,26 @@
+import QuizCreation from '@/components/quiz/QuizCreation';
 import { getAuthSession } from '@/lib/nextauth';
 import { redirect } from 'next/navigation';
 import React from 'react'
 
-type Props = {}
+interface Props {
+    searchParams: {
+      topic?: string;
+    };
+}
 
 export const meatadat = {
     title: "Quiz | IQ-AI",
+    description: "Quiz yourself on anything!",
 };
 
-const QuizPage = async (props: Props) => {
+const QuizPage = async ({searchParams}: Props) => {
     const session = await getAuthSession();
     if (!session?.user) {
         return redirect('/');
     }
     return (
-        <div>QuizPage</div>
+        <QuizCreation topic={searchParams.topic ?? ""} />
     )
 }
 

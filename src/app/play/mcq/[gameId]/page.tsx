@@ -10,7 +10,8 @@ type Props = {
     }
 }
 
-const MCQPage = async ({params: { gameId }}: Props) => {
+const MCQPage = async ({params}: Props) => {
+    const gameId = params.gameId;
     const session = await getAuthSession();
     if(!session?.user) {
         return redirect('/');

@@ -21,9 +21,8 @@ import { BookOpen, CopyCheck } from "lucide-react";
 import { Separator } from "../ui/separator";
 import axios, { AxiosError } from "axios";
 import { useMutation } from "@tanstack/react-query";
-import { useToast } from "../ui/use-toast";
 import { useRouter } from "next/navigation";
-import LoadingQuestions from "../LoadingQuestions";
+import LoadingQuestions from "./LoadingQuestions";
 
 type Props = {
     topic: string;
@@ -35,7 +34,6 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
     const router = useRouter();
     const [showLoader, setShowLoader] = React.useState(false);
     const [finishedLoading, setFinishedLoading] = React.useState(false);
-    const { toast } = useToast();
 
     // When we want to hit an endpoint that changes something in the server, we use a useMutation hook
     const { mutate: getQuestions, isPending } = useMutation({
@@ -48,7 +46,7 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
         resolver: zodResolver(quizCreationSchema),
         defaultValues: {
             amount: 5,
-            topic: "",
+            topic: topicParam,
             type: "mcq"
         }
     });
@@ -60,11 +58,7 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
             setShowLoader(false);
             if (error instanceof AxiosError) {
               if (error.response?.status === 500) {
-                toast({
-                  title: "Error",
-                  description: "Something went wrong. Please try again later.",
-                  variant: "destructive",
-                });
+                
               }
             }
           },
@@ -76,7 +70,7 @@ const QuizCreation = ({ topic: topicParam }: Props) => {
               } else if (form.getValues("type") === "open_ended") {
                 router.push(`/play/open-ended/${gameId}`);
               }
-            }, 2000);
+            }, 500);
           },
         });
       };

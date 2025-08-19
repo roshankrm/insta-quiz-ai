@@ -71,6 +71,12 @@ model Game {
   @@index([userId], map: "Game_userId_idx")
 }
 
+model TopicCount {
+  id        String   @id @default(cuid())
+  topic     String   @unique
+  count     Int
+}
+
 model Question {
   id         String   @id @default(cuid())
   question   String
@@ -80,6 +86,7 @@ model Question {
   isCorrect  Boolean? // for mcqs
   percentageCorrect Float? // for open ended questions
   questionType GameType
+  userAnswer        String?
   game       Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
 
   @@index([gameId], map: "Question_gameId_idx")

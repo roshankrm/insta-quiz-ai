@@ -5,7 +5,6 @@ import { BarChart, ChevronRight, Loader2, Timer } from 'lucide-react'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { Card, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Button, buttonVariants } from '../ui/button';
-import MCQCounter from './MCQCounter';
 import { useMutation } from '@tanstack/react-query';
 import { checkAnswerSchema } from '@/schemas/form/quiz';
 import z, { set } from 'zod';
@@ -14,20 +13,19 @@ import { toast } from "sonner";
 import Link from 'next/link';
 import { formatTimeDelta } from '@/lib/utils';
 import { differenceInSeconds } from 'date-fns';
+import BlankAnsInput from './BlankAnsInput';
 import TimerDisplay from '../TimerDisplay';
 
 type Props = {
-    game: Game & {questions: Pick<Question, 'id' | 'options' | 'question'>[]}
+    game: Game & {questions: Pick<Question, 'id' | 'answer' | 'question'>[]}
 }
 
-const MCQ = ({ game }: Props) => {
+const OpenEnded = ({ game }: Props) => {
 
     const [questionIndex, setQuestionIndex] = useState(0);
-    const [selectedOption, setSelectedOption] = useState(0);
-    const [correctAnswers, setCorrectAnswers] = useState(0);
-    const [wrongAnswers, setWrongAnswers] = useState(0);
     const [hasEnded, setHasEnded] = useState(false);
     // const [now, setNow] = useState(new Date());
+    const [blankAnswer, setBlankAnswer] = useState('');
 
     // useEffect(() => {
     //     const interval = setInterval(() => {
@@ -42,16 +40,17 @@ const MCQ = ({ game }: Props) => {
         return game.questions[questionIndex];
     }, [questionIndex, game.questions]);
 
-    const options = useMemo(() => {
-        if(!curQuestion?.options) return [];
-        return JSON.parse(curQuestion.options as string) as string[];
-    }, [curQuestion]);
-
     const {mutate: checkAnswer, isPending: isChecking} = useMutation({
         mutationFn: async () => {
+            let filledAns = blankAnswer;
+            document.querySelectorAll('.user-blank-input').forEach((input) => {
+                const inputElement = input as HTMLInputElement;
+                filledAns = filledAns.replace("_____", inputElement.value);
+                inputElement.value = "";
+            });
             const payload: z.infer<typeof checkAnswerSchema> = {
                 questionId: curQuestion.id,
-                userAnswer: options[selectedOption]
+                userAnswer: filledAns
             }
             const response = await axios.post('/api/checkAnswer', payload);
             return response.data;
@@ -70,13 +69,11 @@ const MCQ = ({ game }: Props) => {
     const handleNext = useCallback(() => {
         if(isChecking) return;
         checkAnswer( undefined, {
-            onSuccess: ({isCorrect}) => {
-                if(isCorrect) {
-                    toast.success("Correct!");
-                    setCorrectAnswers(prev => prev + 1);
+            onSuccess: ({ percentageCorrect }) => {
+                if(percentageCorrect < 70) {
+                    toast.error(`Your answer was ${percentageCorrect} % correct.`);
                 } else {
-                    toast.error("Incorrect!");
-                    setWrongAnswers(prev => prev + 1);
+                    toast.success(`Your answer was ${percentageCorrect} % correct!`);
                 }
                 if(questionIndex === game.questions.length - 1) {
                     setHasEnded(true);
@@ -85,34 +82,18 @@ const MCQ = ({ game }: Props) => {
                 setQuestionIndex(prev => prev + 1);
             }
         })
-    }, [checkAnswer, toast, isChecking, questionIndex, game.questions.length]); 
+    }, [checkAnswer, toast, isChecking, questionIndex, game.questions.length, blankAnswer]); 
     // the function re-initiates whenever these variables change
 
     useEffect(() => {
         document.addEventListener('keydown', (e) => {
-            if(e.key === '1') {
-                setSelectedOption(0);
-            } else if(e.key === '2') {
-                setSelectedOption(1);
-            } else if(e.key === '3') {
-                setSelectedOption(2);
-            } else if(e.key === '4') {
-                setSelectedOption(3);
-            } else if(e.key === 'Enter') {
+            if(e.key === 'Enter') {
                 handleNext();
             }
         });
         return () => {
             document.removeEventListener('keydown', (e) => {
-                if(e.key === '1') {
-                    setSelectedOption(0);
-                } else if(e.key === '2') {
-                    setSelectedOption(1);
-                } else if(e.key === '3') {
-                    setSelectedOption(2);
-                } else if(e.key === '4') {
-                    setSelectedOption(3);
-                } else if(e.key === 'Enter') {
+                if(e.key === 'Enter') {
                     handleNext();
                 }
             });
@@ -155,7 +136,7 @@ const MCQ = ({ game }: Props) => {
                 </div> */}
                 {!hasEnded && <TimerDisplay timeStarted={game.timeStarted} />}
             </div>
-            <MCQCounter correctAnswers={correctAnswers} wrongAnswers={wrongAnswers}/>
+            {/* <MCQCounter correctAnswers={correctAnswers} wrongAnswers={wrongAnswers}/> */}
         </div>
 
         <Card className='w-full mt-4'>
@@ -173,25 +154,7 @@ const MCQ = ({ game }: Props) => {
         </Card>
 
         <div className="flex flex-col items-center justify-center w-full mt-4">
-            {options.map((option, index) => (
-                <Button
-                    key={index}
-                    className='justify-start w-full py-8 mb-4'
-                    variant={selectedOption === index ? 'default' : 'secondary'}
-                    onClick={() => {
-                        setSelectedOption(index);
-                    }}
-                >
-                    <div className="flex items-center justify-start">
-                        <div className="p-2 px-3 mr-5 border rounded-md">
-                            {index+1}
-                        </div>
-                        <div className="text-start">
-                            {option}
-                        </div>
-                    </div>
-                </Button>
-            ))}
+            <BlankAnsInput answer={curQuestion.answer} setBlankAnswer={setBlankAnswer} />
             <Button 
                 className='mt-2' 
                 disabled={isChecking}
@@ -205,4 +168,4 @@ const MCQ = ({ game }: Props) => {
   )
 }
 
-export default MCQ
+export default OpenEnded

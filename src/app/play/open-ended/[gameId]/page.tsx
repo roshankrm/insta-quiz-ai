@@ -1,10 +1,42 @@
+import OpenEnded from '@/components/game/OpenEnded';
+import { prisma } from '@/lib/db';
+import { getAuthSession } from '@/lib/nextauth';
+import { redirect } from 'next/navigation';
 import React from 'react'
 
-type Props = {}
+type Props = {
+    params: {
+        gameId: string;
+    }
+}
 
-const OpenEndedPage = (props: Props) => {
+const OpenEndedPage = async ({params}: Props) => {
+    const gameId = params.gameId;
+    const session = await getAuthSession();
+    if(!session?.user) {
+        return redirect('/');
+    }
+
+    const game = await prisma.game.findUnique({
+        where: {
+            id: gameId,
+        },
+        include: {
+            questions: {
+                select: {
+                    id: true,
+                    question: true,
+                    answer: true
+                }
+            }
+        }
+    });
+
+    if(!game || game.gameType !== 'open_ended') {
+        return redirect('/quiz');
+    }
   return (
-    <div>OpenEndedPage</div>
+    <OpenEnded game={game} />
   )
 }
 
