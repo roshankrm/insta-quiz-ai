@@ -13,6 +13,7 @@ const fontSizeMapper = (word: { value: number }) =>
 
 const WordCloud = ({ formattedTopics }: Props) => {
   const theme = useTheme();
+  const resolvedTheme = theme.resolvedTheme || theme.theme;
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
 
@@ -34,7 +35,7 @@ const WordCloud = ({ formattedTopics }: Props) => {
         fontSize={fontSizeMapper}
         rotate={0}
         padding={10}
-        fill={() => (theme.theme === "dark" ? "white" : "black")}
+        fill={() => (resolvedTheme === "light" ? "black" : "white")}
         onWordClick={(e, d) => {
           router.push("/quiz?topic=" + d.text);
         }}

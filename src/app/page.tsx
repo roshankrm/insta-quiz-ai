@@ -10,7 +10,7 @@ export default async function Home() {
   }
   return (
     <div className="absolute -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2">
-      <Card className="w-[40vw]">
+      <Card className="min-w-[300px] w-[40vw]">
         <CardHeader>
           <CardTitle>Welcome to InstaQuizAI!</CardTitle>
           <CardDescription>
